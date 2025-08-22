@@ -1,7 +1,7 @@
 #include "main.h"
 
-#include "ATEMbase.h"
-#include "ATEMext.h"
+#include <ATEMbase.h>
+#include <ATEMext.h>
 
 ATEMext AtemSwitcher;
 
@@ -35,7 +35,17 @@ void atem_loop() {
                     dbg("tally: %d %d\n", n+1, tallyState);
                 }
             }
+
+            static unsigned long lastTallyUpdate = 0;
+
             if(tallyChanged) {
+                lastTallyUpdate = millis();
+                LoRaBCTS();
+            }
+            
+            // Resend lora tally state after 2 seconds
+            if (millis() - lastTallyUpdate > 2000) {
+                lastTallyUpdate = millis();
                 LoRaBCTS();
             }
         }

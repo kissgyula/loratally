@@ -122,7 +122,7 @@
     #define OLED_RST 21
 
     #define GPIO_BUTTON GPIO_NUM_0
-    #define GPIO_BATTERY GPIO_NUM_2
+    #define GPIO_BATTERY GPIO_NUM_1
 
     #define HAS_LORA
     #define LoRa_SCK  9
@@ -135,11 +135,11 @@
 
     #define Vext      36
     #define ADCctrl   37
-//    #define ADCR1     100.0
-//    #define ADCR2     390.0
-    #define ADCR1     240.0
-    #define ADCR2     634.0
-    #define BATTCELLS 2
+    #define ADCR1     100.0
+    #define ADCR2     390.0
+    //#define ADCR1     240.0
+    //#define ADCR2     634.0
+    #define BATTCELLS 1
 
     #define HAS_PIXEL
     #define PixelPin  4

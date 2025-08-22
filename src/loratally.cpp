@@ -7,6 +7,7 @@ static unsigned long statusLast = 0;
 static unsigned long commandLast = 0;
 
 static int RSSIlast = 0;
+static int SNRlast = 0;
 static uint16_t msg_cnt = 0;
 static bool init_done = false;
 static volatile bool receivedFlag = false;
@@ -98,6 +99,8 @@ void lora_shutdown() {
 uint16_t LoRaGetMsgCnt(void) { return msg_cnt; }
 
 int LoRaGetRSSI(void) { return RSSIlast; }
+
+int LoRaGetSNR(void) { return SNRlast; }
 
 void LoRaTx(tallyCMD_t &t) {
 #ifdef HAS_LORA
@@ -282,7 +285,7 @@ void lora_receive() {
         memset(t.b8, 0, sizeof(t));
 
         size_t packetSize = LoRa.getPacketLength();
-        dbg("lora_receive: %d %d\n", packetSize);
+        info("lora_receive: %d %d\n", packetSize);
         if (packetSize > 0) {
             int16_t ret = LoRa.readData(t.b8, sizeof(t));
             if(transmit_done) {
@@ -291,7 +294,8 @@ void lora_receive() {
             }
             if (ret == RADIOLIB_ERR_NONE) {
                 int rssi = LoRa.getRSSI();
-                dbg("incoming packet: %d RSSI %d\n", packetSize, rssi);
+                int snr = LoRa.getSNR();
+                dbg("incoming packet: %d RSSI %d SNR %d\n", packetSize, rssi, snr);
 #ifdef DEBUG
                 for (int i = 0; i < sizeof(t); i++) {
                     printf("%02X ", t.b8[i]);
@@ -306,14 +310,17 @@ void lora_receive() {
                         if (t.t.cmd == cmd_TALLY && t.t.addr == cfg.tally_id) {
                             msg_cnt++;
                             RSSIlast = rssi;
+                            SNRlast = snr;
                             setTallyLight(t.t.r, t.t.g, t.t.b, DISP_RSSI);
                         } else if (t.b.cmd == cmd_BROADCAST) {
                             msg_cnt++;
                             RSSIlast = rssi;
+                            SNRlast = snr;
                             dbg("Tally Broadcast:\n");
                             tallyFromEncoded(t.b.rgb, cfg.tally_id);
                         } else if (t.t.cmd == cmd_BC_TS) {
                             RSSIlast = rssi;
+                            SNRlast = snr;
                             msg_cnt++;
                             for (int i = 0; i < LORA_MAX_TS; i++) {
                                 LoRaDecodeTallyState(i + 1,
@@ -376,6 +383,7 @@ void LoRaStatus() {
     s.s.voltage = get_batt_volt() / 100.0;
     s.s.msgcnt = msg_cnt;
     s.s.rssi = RSSIlast;
+    s.s.rssi = SNRlast;
     WiFi.macAddress(s.s.mac);
     s.dw.crc32 = CRC32::calculate(s.b8, sizeof(tallyCMD_t) - sizeof(uint32_t));
     LoRaTx(s);

@@ -270,6 +270,9 @@ void setup() {
     webserver_setup();
 
     setTallyLight(0, 0, 0, DISP_OFF);
+
+    // Pull up pin 37 for battery measurement
+    pinMode(37, INPUT_PULLUP);
 }
 
 void power_off(int state) {
@@ -320,7 +323,7 @@ void wifi_loop() {
         }
         if ((millis() - last_blink) > 500) {
             last_blink = millis();
-            setTallyLight(0, 0, 32 * !(count & 1), DISP_OFF);
+            //setTallyLight(0, 0, 32 * !(count & 1), DISP_OFF);
             count++;
             info("%d\n", count);
         }
