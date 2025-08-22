@@ -1,5 +1,5 @@
-#define VERSION_STR "1.0.9"
-#define VERSION_NUMBER 9
+#define VERSION_STR "1.0.10"
+#define VERSION_NUMBER 10
 
 #ifdef DEBUG
     #define BUILD_STR "DEBUG"

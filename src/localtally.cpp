@@ -240,7 +240,11 @@ void setTallyLight(int r, int g, int b, dispMode_t disp, int pixel,
     }
 
     r = r * cfg.led_max_brightness / 255;
-    g = g * cfg.led_max_brightness / 255;
+    if (r) {
+        g = 0;
+    } else {
+        g = g * cfg.led_max_brightness / 255;
+    }
     b = b * cfg.led_max_brightness / 255;
 #ifdef HAS_PIXEL
     if (pixel == 0) {
